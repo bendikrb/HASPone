@@ -228,7 +228,7 @@ variables:
   commandtopic: '{{ "hasp/" ~ haspname ~ "/command/" ~ haspobject }}'
   jsoncommandtopic: '{{ "hasp/" ~ haspname ~ "/command/json" }}'
   jsontopic: '{{ "hasp/" ~ haspname ~ "/state/json" }}'
-  text: '{{states(weather_provider)|replace("windy-variant","windy")|replace("clear-night","clear night")|replace("partlycloudy","partly cloudy")|replace("lightning-rainy","lightning & rain")|replace("snowy-rainy","snow & rain")|title}}'
+  text: "{{ state_translated(weather_provider) }}"
   isbr: "{% if wrap == true %}1{% else %}0{% endif %}"
   selectedfgtopic: '{{ "hasp/" ~ haspname ~ "/light/selectedforegroundcolor/rgb" }}'
   selectedbgtopic: '{{ "hasp/" ~ haspname ~ "/light/selectedbackgroundcolor/rgb" }}'
