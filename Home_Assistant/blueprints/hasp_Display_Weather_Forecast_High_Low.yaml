@@ -1,18 +1,20 @@
 blueprint:
-  name: "HASPone p[x].b[y] has theme colors applied"
+  name: "HASPone p[x].b[y] displays the weather forecast High and Low temperature"
   description: |
 
     ## Blueprint Version: `1.06.00`
 
     ## Description
 
-    A button on the HASPone will have the current device theme or custom colors applied.
+    A HASPone button displays the high and low temperatures from a selected weather forecast.
+
+    ![Preview](https://raw.githubusercontent.com/HASwitchPlate/HASPone/main/images/hasp_Display_Weather_Forecast.png)
 
     ## HASPone Page and Button Reference
 
-    <details>
-
     The images below show each available HASPone page along with the layout of available button objects.
+
+    <details>
 
     | Page 0 | Pages 1-3 | Pages 4-5 |
     |--------|-----------|-----------|
@@ -25,6 +27,36 @@ blueprint:
     | Page 9 | Page 10 | Page 11 |
     |--------|---------|---------|
     | ![Page 9](https://raw.githubusercontent.com/HASwitchPlate/HASPone/main/images/NextionUI_p9_9buttons.png) | ![Page 10](https://raw.githubusercontent.com/HASwitchPlate/HASPone/main/images/NextionUI_p10_5buttons.png) | ![Page 11](https://raw.githubusercontent.com/HASwitchPlate/HASPone/main/images/NextionUI_p11_1button+1slider.png)
+
+    </details>
+
+    ## HASPone Font Reference
+
+    <details>
+
+    The Nextion display supports monospaced and proportional fonts.  For monospace fonts, the HASPone project includes [Consolas](https://docs.microsoft.com/en-us/typography/font-list/consolas) monospace in 4 sizes, [Webdings](https://en.wikipedia.org/wiki/Webdings#Character_set) in 1 size, and [Google's "Noto Sans"](https://github.com/googlefonts/noto-fonts) proportional in 5 sizes
+
+    | Font | Name              | Characters per line | Lines per button |
+    | :--- | :---------------- | :-------------------| :--------------- |
+    | 0    | Consolas 24       | 20 characters       | 2 lines          |
+    | 1    | Consolas 32       | 15 characters       | 2 lines          |
+    | 2    | Consolas 48       | 10 characters       | 1 line           |
+    | 3    | Consolas 80       | 6 characters        | 1 line           |
+    | 4    | Webdings 56       | 8 characters        | 1 line           |
+    | 5    | Noto Sans 24      | Proportional        | 2 lines          |
+    | 6    | Noto Sans 32      | Proportional        | 2 lines          |
+    | 7    | Noto Sans 48      | Proportional        | 1 line           |
+    | 8    | Noto Sans 64      | Proportional        | 1 line           |
+    | 9    | Noto Sans 80      | Proportional        | 1 line           |
+    | 10   | Noto Sans Bold 80 | Proportional        | 1 line           |
+
+    ### Icons
+
+    Fonts 5-10 also include [1400+ icons which you can copy and paste from here](https://htmlpreview.github.io/?https://github.com/HASwitchPlate/HASPone/blob/main/images/hasp-fontawesome5.html)
+
+    ### Font examples
+
+    ![HASPone Fonts 0-3](https://raw.githubusercontent.com/HASwitchPlate/HASPone/main/images/NextionUI_Fonts_0-3.png) ![HASPone Fonts 4-7](https://raw.githubusercontent.com/HASwitchPlate/HASPone/main/images/NextionUI_Fonts_4-7.png) ![HASPone Fonts 8-10](https://raw.githubusercontent.com/HASwitchPlate/HASPone/main/images/NextionUI_Fonts_8-10.png)
 
     </details>
 
@@ -62,7 +94,7 @@ blueprint:
           model: "HASPone v1.0.0"
     hasppage:
       name: "HASPone Page"
-      description: "Select the HASPone page (1-11). Refer to the HASPone Page and Button reference above."
+      description: "Select the HASPone page (1-11) for the forecast. Refer to the HASPone Page and Button reference above."
       default: 1
       selector:
         number:
@@ -72,7 +104,7 @@ blueprint:
           unit_of_measurement: page
     haspbutton:
       name: "HASPone Button"
-      description: "Select the HASPone button (4-15) to apply color theme to. Refer to the HASPone Page and Button reference above."
+      description: "Select the HASPone button (4-15) for the forecast. Refer to the HASPone Page and Button reference above."
       default: 4
       selector:
         number:
@@ -80,6 +112,76 @@ blueprint:
           max: 15
           mode: slider
           unit_of_measurement: button
+    weather_provider:
+      name: "Weather provider"
+      description: "Select the weather provider to obtain the forecast"
+      selector:
+        entity:
+          domain: weather
+    forecast_interval:
+      name: "Forecast interval"
+      description: 'Forecast interval, one of "hourly", "twice daily", or "daily". Not all weather providers will offer all options.'
+      default: "daily"
+      selector:
+        select:
+          options:
+            - "hourly"
+            - "twice_daily"
+            - "daily"
+    forecast_index:
+      name: "Forecast index"
+      description: 'Select a specific forecast, the next time interval will be index "0". Increment this number for future forecasts'
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 48
+          mode: slider
+          unit_of_measurement: index
+    font_select:
+      name: "Font"
+      description: "Select the font for the displayed text. You probably want to leave this as 10, refer to the HASPone Font Reference above."
+      default: "10 - Noto Sans Bold 80"
+      selector:
+        select:
+          options:
+            - "0 - Consolas 24"
+            - "1 - Consolas 32"
+            - "2 - Consolas 48"
+            - "3 - Consolas 80"
+            - "4 - Webdings 56"
+            - "5 - Noto Sans 24"
+            - "6 - Noto Sans 32"
+            - "7 - Noto Sans 48"
+            - "8 - Noto Sans 64"
+            - "9 - Noto Sans 80"
+            - "10 - Noto Sans Bold 80"
+    xcen_select:
+      name: "Text horizontal alignment"
+      description: "Horizontal text alignment: 0=Left 1=Center 2=Right"
+      default: "1 - Centered"
+      selector:
+        select:
+          options:
+            - "0 - Left aligned"
+            - "1 - Centered"
+            - "2 - Right aligned"
+    ycen_select:
+      name: "Text vertical alignment"
+      description: "Vertical text alignment: 0=Top 1=Center 2=Bottom"
+      default: "1 - Centered"
+      selector:
+        select:
+          options:
+            - "0 - Top aligned"
+            - "1 - Centered"
+            - "2 - Bottom aligned"
+    wrap:
+      name: "Text wrap"
+      default: false
+      description: "Enable line-wrapping text if too long to fit in the button."
+      selector:
+        boolean:
     selected_fgcolor:
       name: "Selected foreground color"
       description: 'Selected foreground color in Nextion RGB565 format (see "Nextion color codes" above for reference). -1 = Current theme selected foreground color.'
@@ -125,11 +227,21 @@ variables:
   haspname: >-
     {%- for entity in device_entities(haspdevice) -%}
       {%- if entity|regex_search("^sensor\..+_sensor(?:_\d+|)$") -%}
-        {{- entity|regex_replace(find="^sensor\.(?:hasp_)?(.*)_sensor(?:_\d+|)$", replace="\\1", ignorecase=true) -}}
+        {{- entity|regex_replace(find="^sensor\.", replace="", ignorecase=true)|regex_replace(find="_sensor(?:_\d+|)$", replace="", ignorecase=true) -}}
       {%- endif -%}
     {%- endfor -%}
   hasppage: !input hasppage
   haspbutton: !input haspbutton
+  weather_provider: !input weather_provider
+  forecast_interval: !input forecast_interval
+  forecast_index: !input forecast_index
+  font_select: !input font_select
+  font: '{{ font_select.split(" - ")[0] | int }}'
+  xcen_select: !input xcen_select
+  xcen: '{{ xcen_select.split(" - ")[0] | int }}'
+  ycen_select: !input ycen_select
+  ycen: '{{ ycen_select.split(" - ")[0] | int }}'
+  wrap: !input wrap
   selected_fgcolor: !input selected_fgcolor
   selected_bgcolor: !input selected_bgcolor
   unselected_fgcolor: !input unselected_fgcolor
@@ -211,7 +323,7 @@ trigger_variables:
   haspname: >-
     {%- for entity in device_entities(haspdevice) -%}
       {%- if entity|regex_search("^sensor\..+_sensor(?:_\d+|)$") -%}
-        {{- entity|regex_replace(find="^sensor\.(?:hasp_)?(.*)_sensor(?:_\d+|)$", replace="\\1", ignorecase=true) -}}
+        {{- entity|regex_replace(find="^sensor\.", replace="", ignorecase=true)|regex_replace(find="_sensor(?:_\d+|)$", replace="", ignorecase=true) -}}
       {%- endif -%}
     {%- endfor -%}
   haspsensor: >-
@@ -220,17 +332,18 @@ trigger_variables:
         {{ entity }}
       {%- endif -%}
     {%- endfor -%}
-  jsontopic: '{{ "hasp/" ~ haspname ~ "/state/json" }}'
   selectedfgtopic: '{{ "hasp/" ~ haspname ~ "/light/selectedforegroundcolor/rgb" }}'
   selectedbgtopic: '{{ "hasp/" ~ haspname ~ "/light/selectedbackgroundcolor/rgb" }}'
   unselectedfgtopic: '{{ "hasp/" ~ haspname ~ "/light/unselectedforegroundcolor/rgb" }}'
   unselectedbgtopic: '{{ "hasp/" ~ haspname ~ "/light/unselectedbackgroundcolor/rgb" }}'
 
 trigger:
-  - platform: homeassistant
-    event: start
+  - platform: state
+    entity_id: !input weather_provider
   - platform: template
     value_template: "{{ is_state(haspsensor, 'ON') }}"
+  - platform: homeassistant
+    event: start
   - platform: mqtt
     topic: "{{selectedfgtopic}}"
   - platform: mqtt
@@ -245,10 +358,20 @@ condition:
     value_template: "{{ is_state(haspsensor, 'ON') }}"
 
 action:
+  - service: weather.get_forecasts
+    target:
+      entity_id: !input weather_provider
+    data:
+      type: "{{forecast_interval}}"
+    response_variable: weather_forecast
+  - variables:
+      temphigh: '{{ weather_forecast[weather_provider]["forecast"][forecast_index]["temperature"] }}'
+      templow: '{{ weather_forecast[weather_provider]["forecast"][forecast_index]["templow"] }}'
+      text: "{{templow|int(default=0)}}° {{temphigh|int(default=0)}}°"
+
   - choose:
       #########################################################################
-      # RUN ACTIONS or Home Assistant Startup or HASPone Connect
-      # Apply text style
+      # Display attribute and apply text style when "RUN ACTIONS" is pressed by the user
       - conditions:
           - condition: template
             value_template: >-
@@ -267,11 +390,26 @@ action:
               topic: "{{jsoncommandtopic}}"
               payload: >-
                 [
+                "{{haspobject}}.font={{font}}",
+                "{{haspobject}}.xcen={{xcen}}",
+                "{{haspobject}}.ycen={{ycen}}",
+                "{{haspobject}}.isbr={{isbr}}",
                 "{{haspobject}}.pco={{selectedfg}}",
                 "{{haspobject}}.bco={{selectedbg}}",
                 "{{haspobject}}.pco2={{unselectedfg}}",
-                "{{haspobject}}.bco2={{unselectedbg}}"
+                "{{haspobject}}.bco2={{unselectedbg}}",
+                "{{haspobject}}.txt=\"{{text}}\""
                 ]
+      #########################################################################
+      # Update forecast if our weather provider changed state
+      - conditions:
+          - condition: template
+            value_template: '{{ (trigger.platform == "state") and (trigger.entity_id == weather_provider) }}'
+        sequence:
+          - service: mqtt.publish
+            data:
+              topic: "{{commandtopic}}.txt"
+              payload: '"{{text}}"'
       #########################################################################
       # Catch triggers fired by incoming MQTT messages
       - conditions:
